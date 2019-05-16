@@ -26,8 +26,9 @@ namespace FunctionAppNetcore
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             var config = GetConfig(context);
-            //var storageAccount = CloudStorageAccount.Parse(config.GetConnectionString("AzureStorageConnection"));
-
+           
+            //await AzureStorageHelper.UploadFileAsBlob(_azureStorageConfig.StorageConnectionString,
+            //_azureStorageConfig.Container, "", $"temp_{transactionCode}.json", tempData, null);
 
             string name = req.Query["name"];
 
@@ -39,13 +40,14 @@ namespace FunctionAppNetcore
             var list = await employeeService.GetEmployeeInformation();
             var employee = list.Where(e => e.employee_name == name).First();
 
-            var connectionstring = config.GetSection("AzureStorageConfig:StorageConnectionString").Value;
+            var AzureStorageConnectionString = config.GetSection("AzureStorageConfig:StorageConnectionString").Value;
+            var AzureStorageContainer = config.GetSection("AzureStorageConfig:Container").Value;
 
             string output = JsonConvert.SerializeObject(list);
             byte[] byteArray = Encoding.UTF8.GetBytes(output);
             MemoryStream stream = new MemoryStream(byteArray);
 
-            await AzureStorageHelper.UploadFileAsBlob(connectionstring, null, null, null, stream);
+            await AzureStorageHelper.UploadFileAsBlob(AzureStorageConnectionString, AzureStorageContainer, "", $"employeeid{employee.id}.json", stream);
 
             return name != null
                 ? (ActionResult)new OkObjectResult($"Hello, {name}, your employeeid is {employee.id}")

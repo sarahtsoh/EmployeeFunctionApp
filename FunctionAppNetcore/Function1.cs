@@ -36,18 +36,12 @@ namespace FunctionAppNetcore
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             name = name ?? data?.name;
 
-            var employeeService = new EmployeeService();
-            var list = await employeeService.GetEmployeeInformation();
+            var list = await EmployeeService.GetEmployeeInformation();
+
             var employee = list.Where(e => e.employee_name == name).First();
 
-            var AzureStorageConnectionString = config.GetSection("AzureStorageConfig:StorageConnectionString").Value;
-            var AzureStorageContainer = config.GetSection("AzureStorageConfig:Container").Value;
-
-            string output = JsonConvert.SerializeObject(list);
-            byte[] byteArray = Encoding.UTF8.GetBytes(output);
-            MemoryStream stream = new MemoryStream(byteArray);
-
-            await AzureStorageHelper.UploadFileAsBlob(AzureStorageConnectionString, AzureStorageContainer, "", $"employeeid{employee.id}.json", stream);
+            //await Helper.UploadToAzure(config, employee);
+           
 
             return name != null
                 ? (ActionResult)new OkObjectResult($"Hello, {name}, your employeeid is {employee.id}")

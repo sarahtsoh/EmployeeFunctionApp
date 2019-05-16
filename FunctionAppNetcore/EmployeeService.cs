@@ -11,7 +11,7 @@ namespace FunctionAppTest
 {
     public class EmployeeService
     {
-        public async Task<List<Employee>> GetEmployeeInformation()
+        public static async Task<List<Employee>> GetEmployeeInformation()
         {
            List<Employee> list = null;
             using (var client = new HttpClient())
@@ -35,6 +35,8 @@ namespace FunctionAppTest
 
 
         }
+
+        
 
 
     }
